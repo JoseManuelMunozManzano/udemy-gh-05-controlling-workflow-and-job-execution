@@ -15,6 +15,18 @@ jobs:
       matrix:
         node-version: [12, 14, 16]
         operating-system: [ubuntu-latest, windows-latest]
+        # Hay dos características relacionadas a matrix.
+        # 1. Se puede añadir la key reservada include. Permite añadir una lista con guiones y clave-valor que deben incluirse
+        #    sin añadir un puñado de nuevas combinaciones. En este ejemplo se instalará la versión de node 18 solo para ubuntu (no windows)
+        #    Se pueden incluir nuevas claves no especificadas en la matrix (por ejemplo, podríamos incluir: npm: 6)
+        # 2. Se puede añadir la key reservada exclude. Permite excluir combinaciones.
+        #    En el ejemplo no se va a realizar la ejecución de node 12 con windows-latest.
+        include:
+          - node-version: 18
+            operating-system: ubuntu-latest
+        exclude:
+          - node-version: 12
+            operating-system: windows-latest
     # Ahora se puede establecer el runner de forma dinámica
     runs-on: ${{ matrix.operating-system }}
     steps:
