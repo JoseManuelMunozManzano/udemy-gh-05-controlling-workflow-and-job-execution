@@ -1,0 +1,28 @@
+name: Matrix Demo
+on: push
+jobs:
+  build:
+    # Queremos ejecutar este job con la ayuda de un matrix.
+    # La idea detrás de un matrix es que se puede ejecutar el mismo trabajo con configuraciones diferentes,
+    # por ejemplo diferentes runs-on o diferentes versiones de Node, a la vez.
+    # Esto se hace añadiendo el field strategy al job, seguido de matrix y debajo se añade cualquier key
+    # que queramos cambiar y para la que, para ese nuevo valor, queramos ejecutar el job, que
+    # se ejecutará por defecto en paralelo.
+    strategy:
+      matrix:
+        node-version: [12, 14, 16]
+        operating-system: [ubuntu-latest, windows-latest]
+    # Ahora se puede establecer el runner de forma dinámica
+    runs-on: ${{ matrix.operating-system }}
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          # Igual aquí ahora establecemos el valor de forma dinámica según las valores informados en matrix
+          node-version: ${{ node-version }}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build Project
+        run: npm run build
