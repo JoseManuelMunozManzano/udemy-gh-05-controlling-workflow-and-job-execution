@@ -49,7 +49,8 @@ jobs:
         # GiHub Actions sigue con su comportamiento por defecto por el cual para de ejecutar los
         # pasos y los jobs (que tienen needs) cuando un step o job falla.
         # Para cambiar ese comportamiento por defecto hay que ejecutar una función especial en la condición
-        # if, la función failure() combinada con el operador && y la expresión que queremos evaluar.
+        # if, la función failure() combinada con el operador && y la expresión con lo que queremos que falle
+        # para ejecutar este step.
       - name: Upload test report
         if: failure() && steps.run-tests.outcome == 'failure'
         uses: actions/upload-artifact@v3
@@ -90,3 +91,13 @@ jobs:
         run: ls
       - name: Deploy
         run: echo "Deploying..."
+  # if también está disponible a nivel job
+  # Aquí queremos ejecutar este job sólo si otro job falló
+  report:
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+          echo "Something went wrong"
+          echo "${{ github }}"
