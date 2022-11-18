@@ -35,10 +35,7 @@ jobs:
       - name: Test code
         run: npm run test
         # Generando un informe de test. Ver también el documento vite.config.js
-        # Estamos interesados en que se genere este informe si los test fallan.
-        # Se añade una condición if
       - name: Upload test report
-        if:
         uses: actions/upload-artifact@v3
         with:
           name: test-report
