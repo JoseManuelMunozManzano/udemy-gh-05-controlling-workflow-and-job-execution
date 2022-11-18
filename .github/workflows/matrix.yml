@@ -8,6 +8,9 @@ jobs:
     # Esto se hace añadiendo el field strategy al job, seguido de matrix y debajo se añade cualquier key
     # que queramos cambiar y para la que, para ese nuevo valor, queramos ejecutar el job, que
     # se ejecutará por defecto en paralelo.
+    # Indicar que por defecto, si un job falla, los otros se cancelan. Para evitar ese comportamiento se puede usar
+    # continue-on-error a true a nivel de job.
+    continue-on-error: true
     strategy:
       matrix:
         node-version: [12, 14, 16]
