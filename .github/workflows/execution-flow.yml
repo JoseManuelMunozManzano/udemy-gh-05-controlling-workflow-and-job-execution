@@ -44,8 +44,14 @@ jobs:
         # el context steps, el id y la propiedad outcome y se compara con el text 'failure'
         # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
         # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
+        #
+        # Pero vemos que no se ejecuta este step cuando falla el step Test code y eso es porque
+        # GiHub Actions sigue con su comportamiento por defecto por el cual para de ejecutar los
+        # pasos y los jobs (que tienen needs) cuando un step o job falla.
+        # Para cambiar ese comportamiento por defecto hay que ejecutar una función especial en la condición
+        # if, la función failure() combinada con el operador && y la expresión que queremos evaluar.
       - name: Upload test report
-        if: steps.run-tests.outcome == 'failure'
+        if: failure() && steps.run-tests.outcome == 'failure'
         uses: actions/upload-artifact@v3
         with:
           name: test-report
