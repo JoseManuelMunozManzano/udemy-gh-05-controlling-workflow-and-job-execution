@@ -13,9 +13,19 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          # En vez de hacer caché de este directorio global
+          # path: ~/.npm
+          # podemos hacer que vaya includo más rápido haciendo caché del directorio node_modules local
+          # que contiene todas las dependencias de este proyecto instaladas.
+          # Ahora podemos omitir el step Install dependencies si pudimos usar la caché
+          # Para eso usamos una condición if en el step Install dependencies
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+        # Si no hemos sido capaces de usar la caché entonces instalamos manualmente de nuevo las
+        # dependencias
+        # Este if lo pasamos a todos los steps
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Lint code
         run: npm run lint
@@ -28,9 +38,10 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test code
         # id para ser referenciado en el step Upload test report
@@ -67,9 +78,10 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Build website
         id: build-website
@@ -104,4 +116,4 @@ jobs:
       - name: Output information
         run: |
           echo "Something went wrong"
-          echo "${{ github }}"
+          echo "${{ toJSON(github) }}"
