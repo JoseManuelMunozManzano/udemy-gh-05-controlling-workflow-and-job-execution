@@ -33,9 +33,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Test code
+        # id para ser referenciado en el step Upload test report
+        id: run-tests
         run: npm run test
         # Generando un informe de test. Ver también el documento vite.config.js
+        # Estamos interesados en que se genere este informe si los test fallan.
+        # Se añade una condición if: seguida de una expresión (para el if, como caso especial
+        # no es necesario encerrar la expresión entre ${{ }}, aunque se puede )
+        # Hay que referenciar el step Test code para saber si funcionó o falló. Para eso se usa
+        # el context steps, el id y la propiedad outcome y se compara con el text 'failure'
+        # https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
+        # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
       - name: Upload test report
+        if: steps.run-tests.outcome == 'failure'
         uses: actions/upload-artifact@v3
         with:
           name: test-report
