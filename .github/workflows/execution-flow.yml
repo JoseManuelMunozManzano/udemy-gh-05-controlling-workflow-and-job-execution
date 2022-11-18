@@ -93,7 +93,11 @@ jobs:
         run: echo "Deploying..."
   # if también está disponible a nivel job
   # Aquí queremos ejecutar este job sólo si otro job falló
+  # Pero para que funcione tenemos que añadir la key needs. Con esto GitHub Actions retrasará la ejecución
+  # hasta que esos trabajos hayan finalizado y failure() tendrá en cuenta no solo esos jobs, sino toda la
+  # cadena de esos jobs que pertenecen a esos jobs (sus needs)
   report:
+    needs: [lint, deploy]
     if: failure()
     runs-on: ubuntu-latest
     steps:
