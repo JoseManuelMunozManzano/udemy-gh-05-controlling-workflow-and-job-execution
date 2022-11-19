@@ -1,10 +1,42 @@
 name: Reusable Deploy
 # Para hacer reusable este workflow, debe poder ser llamado por otros workflows
 # Eso se indica en on con workflow_call
-on: workflow_call
+on:
+  workflow_call:
+    # Aquí va la data de entrada a este workflow
+    inputs:
+      artifact-name:
+        description: The name of the deployable artifact files
+        # Con required a false, si no obtenemos este input el workflow NO fallará
+        # A true, si no obtenemos este valor el workflow falla
+        required: false
+        # Si asumimos que no vamos a recibir este input y queremos que el workflow no falle
+        # podemos indicar un valor por default, que será el que se usará
+        default: dist
+        type: string
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Cuando se reusa un workflow tenemos que pensar que es muy probable que necesitemos datos.
+      # En el ejemplo de uploading, necesitaremos el código.
+      # En el workflow use-reuse.yml se genera ese código en el step build y se hace el
+      # upload con un artifact.
+      # Necesitamos descargar ese artifact para obtener, usar y hacer el upload del código.
+      - name: Get Code
+        uses: actions/download-artifact@v3
+        # Hay que indicar la key del artifact que queremos descargar.
+        # En use-reuse.yml vemos que es dist-files
+        # El problema ahora es que este workflow no es realmente reusable, solo lo podremos usar en
+        # workflows que hagan un upload artifacts con una key dist-files.
+        # Por eso hay que usar un nombre dinámico, pero entonces debemos obtener data del workflow que
+        # este usando este workflow (reusable.yml) En concreto queremos el nombre del artifact.
+        # Se puede pensar que este workflow es una función llamada por use-reuse.yml
+        # Para eso, arriba en workflow_call se indica el context inputs
+        # https://docs.github.com/en/actions/learn-github-actions/contexts
+        with:
+          name: ${{ inputs.artifact-name }}
+      - name: List files
+        run: ls
       - name: Output information
         run: echo "Deploying & uploading..."
