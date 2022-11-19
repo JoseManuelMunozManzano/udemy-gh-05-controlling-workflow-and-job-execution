@@ -74,6 +74,9 @@ jobs:
     # Hay que indicar el path completo al workflow relativo a la carpeta root del proyecto.
     # Se puede indicar un path de un workflow definido en otro repository.
     uses: ./.github/workflows/reusable.yml
+    # Aquí pasamos los valores de entrada que espera el workflow reusable (reusable.yml)
+    with:
+      artifact-name: dist-files
   report:
     needs: [lint, deploy]
     if: failure()
