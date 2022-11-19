@@ -19,8 +19,23 @@ on:
     #secrets:
     ##  some-secret:
     ###    required: false
+    # El workflow reusable también puede devolver valores al workflow llamador. Sería similar al return
+    # de una función.
+    outputs:
+      result:
+        description: The result of the deployment operation
+        # El value se toma de uno de los steps de los jobs de este workflow usando el context jobs
+        # https://docs.github.com/en/actions/learn-github-actions/contexts
+        # Se usa deploy porque es el nombre del job y outcome porque es el nombre del outputs que hay
+        # en el job deploy.
+        value: ${{ jobs.deploy.outputs.outcome }}
 jobs:
   deploy:
+    # Para poder usar el output como salida de este workflow reusable hay que indicarlo con la key outputs
+    outputs:
+      # Se indica el nombre del step (set-result) y obtenemos la salida de ese step en step-result
+      # A todo eso lo llamamos outcome (puede ser cualquier nombre)
+      outcome: ${{ steps.set-result.outputs.step-result }}
     runs-on: ubuntu-latest
     steps:
       # Cuando se reusa un workflow tenemos que pensar que es muy probable que necesitemos datos.
@@ -45,3 +60,10 @@ jobs:
         run: ls
       - name: Output information
         run: echo "Deploying & uploading..."
+      - name: Set result output
+        # Este id se usa en la key outputs del job deploy
+        id: set-result
+        # En versiones antiguas se usaba así
+        # run: echo "::set-output name=step-result::success"
+        # step-result se indica arriba en la key outputs del job deploy
+        run: echo "step-result=success" >> $GITHUB_OUTPUT

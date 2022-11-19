@@ -81,6 +81,19 @@ jobs:
     # Los comento porque realmente no tenemos ese secret
     # secrets:
     ## some-secret: ${{ secrets.some-secret }}
+  # Obteniendo y usando la salida del workflow reusable (reusable.yml)
+  # Se crea otro job y (importante) se indica que necesitamos el job deploy porque este job
+  # debe ejecutarse después de que el job deploy finalice
+  print-deploy-result:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print deploy output
+        # Con el objeto context needs tenemos acceso al job del que dependo.
+        # Luego se indica el job (en este caso solo depende de uno pero podrían ser más)
+        # Luego se indica outputs, la salida del workflow reusable.
+        # Y el nombre del output que devuelve reusable.yml, que es result
+        run: echo "${{ needs.deploy.outputs.result }}"
   report:
     needs: [lint, deploy]
     if: failure()
