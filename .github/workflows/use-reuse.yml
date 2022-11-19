@@ -77,6 +77,10 @@ jobs:
     # Aquí pasamos los valores de entrada que espera el workflow reusable (reusable.yml)
     with:
       artifact-name: dist-files
+    # Para pasar los secrets que espera el workflow reusable
+    # Los comento porque realmente no tenemos ese secret
+    # secrets:
+    ## some-secret: ${{ secrets.some-secret }}
   report:
     needs: [lint, deploy]
     if: failure()

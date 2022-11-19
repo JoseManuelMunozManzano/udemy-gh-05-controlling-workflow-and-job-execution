@@ -14,6 +14,11 @@ on:
         # podemos indicar un valor por default, que será el que se usará
         default: dist
         type: string
+    # También se pueden indicar secrets que pueda necesitar este workflow
+    # Lo comento porque aquí no necesitamos secrets
+    #secrets:
+    ##  some-secret:
+    ###    required: false
 jobs:
   deploy:
     runs-on: ubuntu-latest
